@@ -52,3 +52,6 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+/.vs
+/src/backend/EnterpriseSupplierManager.Api/.vs
+/src/frontend/EnterpriseSupplierManager-UI/.vscode
