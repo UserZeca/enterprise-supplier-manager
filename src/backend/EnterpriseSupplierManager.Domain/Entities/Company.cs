@@ -1,0 +1,13 @@
+﻿namespace EnterpriseSupplierManager.Domain.Entities;
+
+public class Company
+{
+    public Guid Id { get; set; }
+    public string TradeName { get; set; } = string.Empty; // Nome Fantasia
+    public string Cnpj { get; set; } = string.Empty;
+    public string Uf { get; set; } = string.Empty;
+    public string Cep { get; set; } = string.Empty;
+
+    // Relacionamento N:N
+    public ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
+}
