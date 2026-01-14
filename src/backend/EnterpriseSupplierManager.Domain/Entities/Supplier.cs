@@ -11,10 +11,9 @@ public class Supplier
     public string? Rg { get; set; }
     public DateTime? BirthDate { get; set; }
 
-    // Relacionamento N:N
     public ICollection<Company> Companies { get; set; } = new List<Company>();
 
-    // Helper para verificar se é menor de idade
+    // Helper to check if someone is underage
     public bool IsMinor()
     {
         if (!BirthDate.HasValue) return false;

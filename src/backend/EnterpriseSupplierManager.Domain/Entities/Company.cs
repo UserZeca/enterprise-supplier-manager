@@ -8,6 +8,5 @@ public class Company
     public string Uf { get; set; } = string.Empty;
     public string Cep { get; set; } = string.Empty;
 
-    // Relacionamento N:N
     public ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
 }
