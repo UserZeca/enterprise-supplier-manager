@@ -1,8 +1,10 @@
-﻿namespace EnterpriseSupplierManager.Domain.Entities;
+﻿using EnterpriseSupplierManager.Domain.Entities.Common;
 
-public class Company
+namespace EnterpriseSupplierManager.Domain.Entities;
+
+public class Company : BaseEntity
 {
-    public Guid Id { get; set; }
+
     public string TradeName { get; set; } = string.Empty; // Nome Fantasia
     public string Cnpj { get; set; } = string.Empty;
     public string Uf { get; set; } = string.Empty;

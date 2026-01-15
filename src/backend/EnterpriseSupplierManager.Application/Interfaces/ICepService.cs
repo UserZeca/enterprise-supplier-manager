@@ -4,5 +4,6 @@ namespace EnterpriseSupplierManager.Application.Interfaces;
 
 public interface ICepService
 {
-    Task<PostalCodeResponseDTO?> GetAddressByCepAsync(string cep);
+    Task EnsureValidCepAsync(string cep);
+    Task<CepResponseDTO?> GetAddressByCepAsync(string cep);
 }

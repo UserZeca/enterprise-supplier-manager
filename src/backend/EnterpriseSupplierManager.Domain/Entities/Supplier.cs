@@ -1,8 +1,9 @@
-﻿namespace EnterpriseSupplierManager.Domain.Entities;
+﻿using EnterpriseSupplierManager.Domain.Entities.Common;
 
-public class Supplier
+namespace EnterpriseSupplierManager.Domain.Entities;
+
+public class Supplier : BaseEntity
 {
-    public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Document { get; set; } = string.Empty; // CPF ou CNPJ
     public string Email { get; set; } = string.Empty;

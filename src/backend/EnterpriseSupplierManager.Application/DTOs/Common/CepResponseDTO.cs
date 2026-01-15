@@ -2,10 +2,10 @@
 
 namespace EnterpriseSupplierManager.Application.DTOs.Common;
 
-public class PostalCodeResponseDTO
+public class CepResponseDTO
 {
     [JsonPropertyName("cep")]
-    public string PostalCode { get; set; } = string.Empty;
+    public string Cep { get; set; } = string.Empty;
 
     [JsonPropertyName("logradouro")]
     public string Street { get; set; } = string.Empty;

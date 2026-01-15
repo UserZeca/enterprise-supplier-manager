@@ -1,8 +1,10 @@
-﻿using Mapster;
-using EnterpriseSupplierManager.Application.DTOs.Supplier;
+﻿using EnterpriseSupplierManager.Application.DTOs.Supplier;
 using EnterpriseSupplierManager.Application.Interfaces;
 using EnterpriseSupplierManager.Domain.Entities;
+using EnterpriseSupplierManager.Domain.Exceptions;
 using EnterpriseSupplierManager.Domain.Interfaces;
+using Mapster;
+using Microsoft.Extensions.Logging;
 
 namespace EnterpriseSupplierManager.Application.Services;
 
@@ -10,49 +12,171 @@ public class SupplierService : ISupplierService
 {
     private readonly ISupplierRepository _supplierRepository;
     private readonly ICompanyRepository _companyRepository;
+    private readonly ICepService _cepService;
+    private readonly ILogger<SupplierService> _logger;
 
-    public SupplierService(ISupplierRepository supplierRepository, ICompanyRepository companyRepository)
+    public SupplierService(
+        ISupplierRepository supplierRepository, 
+        ICompanyRepository companyRepository,
+        ILogger<SupplierService> logger,
+        ICepService cepService)
     {
         _supplierRepository = supplierRepository;
         _companyRepository = companyRepository;
+        _logger = logger;
+        _cepService = cepService;
     }
 
-    public async Task<SupplierResponseDTO> CreateAsync(SupplierRequestDTO request, Guid companyId)
+    public async Task<SupplierResponseDTO> CreateAsync(SupplierRequestDTO request)
     {
-        var company = await _companyRepository.GetByIdAsync(companyId)
-            ?? throw new Exception("Company not found.");
 
-        // Implementation of the Paraná Rule
-        ValidateParanaRule(request, company.Uf);
+        ValidatePhysicalPersonFields(request);
+
+        var existing = await _supplierRepository.GetByDocumentAsync(request.Document);
+        if (existing != null)
+            throw new DuplicateEntryException("Este fornecedor já está cadastrado globalmente no sistema.");
+
+        await _cepService.EnsureValidCepAsync(request.Cep);
 
         var supplier = request.Adapt<Supplier>();
-
-        await _supplierRepository.AddWithCompanyAsync(supplier, companyId);
+        await _supplierRepository.AddAsync(supplier);
 
         return supplier.Adapt<SupplierResponseDTO>();
     }
 
-    private void ValidateParanaRule(SupplierRequestDTO request, string companyUf)
+    public async Task UpdateAsync(Guid id, SupplierRequestDTO request)
     {
+        ValidatePhysicalPersonFields(request);
 
-        if (companyUf.ToUpper() == "PR" && IsPhysicalPerson(request.Document))
+        var supplier = await _supplierRepository.GetByIdWithCompaniesAsync(id)
+            ?? throw new KeyNotFoundException("Fornecedor não encontrado.");
+
+        _logger.LogInformation("Validando atualização para o fornecedor {SupplierId}", id);
+
+        // Se for Pessoa Física, verifica o vínculo com o Paraná
+        if (IsPhysicalPerson(request.Document))
         {
-            if (!request.BirthDate.HasValue)
-                throw new Exception("Birth date is required for physical persons in Paraná.");
+            bool linkedToParana = supplier.Companies.Any(c => c.Uf.ToUpper() == "PR");
 
-            var age = DateTime.Today.Year - request.BirthDate.Value.Year;
-            if (request.BirthDate.Value.Date > DateTime.Today.AddYears(-age)) age--;
-
-            if (age < 18)
-                throw new Exception("Suppliers from individual persons in Paraná must be 18 years or older.");
+            if (linkedToParana)
+            {
+                _logger.LogInformation("Fornecedor vinculado a empresa do PR. Validando idade.");
+                ValidateParanaRule(request, "PR");
+            }
         }
+
+        if (supplier.Cep != request.Cep)
+            await _cepService.EnsureValidCepAsync(request.Cep);
+
+        request.Adapt(supplier);
+        await _supplierRepository.UpdateAsync(supplier);
+
+        _logger.LogInformation("Fornecedor {SupplierId} atualizado com sucesso.", id);
     }
 
-    private bool IsPhysicalPerson(string document) => document.Length == 11; // Lógica simples de CPF
+    public async Task DeleteAsync(Guid id)
+    {
+        _logger.LogInformation("Solicitação de exclusão para o fornecedor {SupplierId}", id);
+        await _supplierRepository.DeleteAsync(id);
+    }
+
+    public async Task<SupplierResponseDTO?> GetByIdAsync(Guid id)
+    {
+        var supplier = await _supplierRepository.GetByIdAsync(id);
+        return supplier?.Adapt<SupplierResponseDTO>();
+    }
 
     public async Task<IEnumerable<SupplierResponseDTO>> GetAllByCompanyIdAsync(Guid companyId)
     {
         var suppliers = await _supplierRepository.GetByCompanyIdAsync(companyId);
         return suppliers.Adapt<IEnumerable<SupplierResponseDTO>>();
     }
+
+    public async Task AssociateToCompanyAsync(Guid supplierId, Guid companyId)
+    {
+
+        var supplier = await _supplierRepository.GetByIdAsync(supplierId)
+            ?? throw new KeyNotFoundException("Fornecedor não encontrado.");
+
+        var company = await _companyRepository.GetByIdAsync(companyId)
+            ?? throw new KeyNotFoundException("Empresa não encontrada.");
+
+        _logger.LogInformation("Iniciando governança para vínculo: Fornecedor {S} + Empresa {C}", supplierId, companyId);
+
+        var supplierDto = supplier.Adapt<SupplierRequestDTO>();
+
+        ValidateParanaRule(supplierDto, company.Uf);
+
+        await _supplierRepository.AssociateToCompanyAsync(supplierId, companyId);
+
+        _logger.LogInformation("Vínculo estabelecido com sucesso para a UF: {Uf}", company.Uf);
+    }
+
+    #region Métodos privados de validação
+
+    private void ValidateParanaRule(SupplierRequestDTO supplier, string companyUf)
+    {
+        if (companyUf.ToUpper() == "PR" && IsPhysicalPerson(supplier.Document))
+        {
+            // Note que agora usamos os dados da entidade 'supplier' já cadastrada
+            if (!supplier.BirthDate.HasValue)
+                throw new ArgumentException("Fornecedor PF sem data de nascimento não pode ser vinculado a empresas do PR.");
+
+            var age = CalculateAge(supplier.BirthDate.Value);
+            if (age < 18)
+                throw new ArgumentException($"O fornecedor {supplier.Name} é menor de idade ({age} anos) e não pode atender empresas no Paraná.");
+        }
+    }
+
+    private int CalculateAge(DateTime birthDate)
+    {
+        var today = DateTime.Today;
+        var age = today.Year - birthDate.Year;
+
+        if (birthDate.Date > today.AddYears(-age))
+            age--;
+
+        return age;
+    }
+
+    private bool IsPhysicalPerson(string document) => document.Length == 11;
+
+    private bool IsValidRg(string rg)
+    {
+        if (string.IsNullOrWhiteSpace(rg)) return false;
+
+        string sanitizedRg = rg.Replace(".", "").Replace("-", "").Trim();
+
+        // ^[0-9]{5,14} -> Começa com 5 a 14 números
+        // [0-9xX]?$    -> Pode terminar com um número ou a letra X 
+        string pattern = @"^[0-9]{5,14}[0-9xX]?$";
+
+        return System.Text.RegularExpressions.Regex.IsMatch(sanitizedRg, pattern);
+    }
+
+    private void ValidatePhysicalPersonFields(SupplierRequestDTO request)
+    {
+        if (IsPhysicalPerson(request.Document))
+        {
+            if (string.IsNullOrWhiteSpace(request.Rg))
+            {
+                _logger.LogWarning("Validação falhou: RG obrigatório para Pessoa Física.");
+                throw new ArgumentException("O RG é obrigatório para fornecedores que são pessoa física.");
+            }
+
+            if (!IsValidRg(request.Rg))
+            {
+                _logger.LogWarning("Tentativa de cadastro com RG inválido: {Rg}", request.Rg);
+                throw new ArgumentException("O formato do RG informado é inválido.");
+            }
+
+            if (!request.BirthDate.HasValue)
+            {
+                _logger.LogWarning("Validação falhou: Data de Nascimento obrigatória para Pessoa Física.");
+                throw new ArgumentException("A data de nascimento é obrigatória para fornecedores que são pessoa física.");
+            }
+        }
+    }
+
+    #endregion
 }

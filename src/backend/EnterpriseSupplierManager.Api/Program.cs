@@ -1,3 +1,4 @@
+using EnterpriseSupplierManager.Api.Middleware;
 using EnterpriseSupplierManager.Application;
 using EnterpriseSupplierManager.Infrastructure;
 using EnterpriseSupplierManager.Infrastructure.Extensions;
@@ -19,6 +20,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.ApplyMigrations();
 }
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
