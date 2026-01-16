@@ -14,8 +14,6 @@ Bootstrap 5: Sistema de Grid e utilitários para responsividade acelerada.
 
 Ngx-mask: Máscaras dinâmicas para CPF, CNPJ e CEP.
 
-SCSS: Estilização avançada com variáveis e efeitos de Glassmorphism.
-
 ### Backend
 ASP.NET Core (.NET 8/9): Web APIs construídas sob os princípios da Clean Architecture.
 
