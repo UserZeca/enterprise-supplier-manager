@@ -29,9 +29,6 @@ public class SupplierService : ISupplierService
 
     public async Task<SupplierResponseDTO> CreateAsync(SupplierRequestDTO request)
     {
-
-        ValidatePhysicalPersonFields(request);
-
         var existing = await _supplierRepository.GetByDocumentAsync(request.Document);
         if (existing != null)
             throw new DuplicateEntryException("Este fornecedor já está cadastrado globalmente no sistema.");
@@ -46,7 +43,6 @@ public class SupplierService : ISupplierService
 
     public async Task UpdateAsync(Guid id, SupplierRequestDTO request)
     {
-        ValidatePhysicalPersonFields(request);
 
         var supplier = await _supplierRepository.GetByIdWithCompaniesAsync(id)
             ?? throw new KeyNotFoundException("Fornecedor não encontrado.");
@@ -140,43 +136,6 @@ public class SupplierService : ISupplierService
     }
 
     private bool IsPhysicalPerson(string document) => document.Length == 11;
-
-    private bool IsValidRg(string rg)
-    {
-        if (string.IsNullOrWhiteSpace(rg)) return false;
-
-        string sanitizedRg = rg.Replace(".", "").Replace("-", "").Trim();
-
-        // ^[0-9]{5,14} -> Começa com 5 a 14 números
-        // [0-9xX]?$    -> Pode terminar com um número ou a letra X 
-        string pattern = @"^[0-9]{5,14}[0-9xX]?$";
-
-        return System.Text.RegularExpressions.Regex.IsMatch(sanitizedRg, pattern);
-    }
-
-    private void ValidatePhysicalPersonFields(SupplierRequestDTO request)
-    {
-        if (IsPhysicalPerson(request.Document))
-        {
-            if (string.IsNullOrWhiteSpace(request.Rg))
-            {
-                _logger.LogWarning("Validação falhou: RG obrigatório para Pessoa Física.");
-                throw new ArgumentException("O RG é obrigatório para fornecedores que são pessoa física.");
-            }
-
-            if (!IsValidRg(request.Rg))
-            {
-                _logger.LogWarning("Tentativa de cadastro com RG inválido: {Rg}", request.Rg);
-                throw new ArgumentException("O formato do RG informado é inválido.");
-            }
-
-            if (!request.BirthDate.HasValue)
-            {
-                _logger.LogWarning("Validação falhou: Data de Nascimento obrigatória para Pessoa Física.");
-                throw new ArgumentException("A data de nascimento é obrigatória para fornecedores que são pessoa física.");
-            }
-        }
-    }
 
     #endregion
 }

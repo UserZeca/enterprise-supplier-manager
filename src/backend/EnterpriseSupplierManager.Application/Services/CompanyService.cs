@@ -3,6 +3,7 @@ using EnterpriseSupplierManager.Application.Interfaces;
 using EnterpriseSupplierManager.Domain.Entities;
 using EnterpriseSupplierManager.Domain.Exceptions;
 using EnterpriseSupplierManager.Domain.Interfaces;
+using EnterpriseSupplierManager.Domain.Validation;
 using Mapster;
 using Microsoft.Extensions.Logging;
 
