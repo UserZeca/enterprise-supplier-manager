@@ -37,20 +37,20 @@ UiService: Centralização do tratamento de erros do backend .NET, transformando
 A comunicação entre o frontend e a API utiliza Signals, garantindo que a interface se atualize instantaneamente após operações de Delete, Create ou Update sem a necessidade de recarregar a página.
 
 ## 🧪 Como Testar o Sistema
-Testes de Fluxo (UI)
+### Testes de Fluxo (UI)
 Navegação: Utilize o menu lateral (ou rotas diretas /suppliers e /companies) para alternar entre os módulos.
 
 Cadastro de Fornecedor:
 
-Selecione Pessoa Física: O formulário deve exibir campos de RG e Data de Nascimento.
+  Selecione Pessoa Física: O formulário deve exibir campos de RG e Data de Nascimento.
+  
+  Selecione Pessoa Jurídica: O formulário deve ocultar campos pessoais.
+  
+  Consulta de CEP: Digite um CEP válido e saia do campo (blur) para verificar a integração com a API ViaCEP.
+  
+  Máscaras: Insira documentos para validar a formatação automática de CPF (11 dígitos) e CNPJ (14 dígitos).
 
-Selecione Pessoa Jurídica: O formulário deve ocultar campos pessoais.
-
-Consulta de CEP: Digite um CEP válido e saia do campo (blur) para verificar a integração com a API ViaCEP.
-
-Máscaras: Insira documentos para validar a formatação automática de CPF (11 dígitos) e CNPJ (14 dígitos).
-
-Testes de API (Backend)
+### Testes de API (Backend)
 Swagger: Acesse https://localhost:PORTA/swagger para visualizar todos os endpoints.
 
 Validações: Tente enviar um SupplierRequestDTO sem o campo Document e verifique se o SnackBar do Angular exibe o erro retornado pelo .NET.
