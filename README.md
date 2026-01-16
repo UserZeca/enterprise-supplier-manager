@@ -1,11 +1,11 @@
 # enterprise-supplier-manager
 Solução desenvolvida para o gerenciamento de relações entre Empresas e Fornecedores.
 
-Enterprise Supplier Manager
+## Enterprise Supplier Manager
 O Enterprise Supplier Manager é uma plataforma de gestão centralizada de dados mestres (MDM) desenvolvida para otimizar o controle de fornecedores e unidades de negócio (empresas). O sistema utiliza uma estética direta integrada a uma arquitetura robusta no backend para garantir integridade fiscal e tributária.
 
-🚀 Tecnologias Utilizadas
-Frontend
+## 🚀 Tecnologias Utilizadas
+### Frontend
 Angular (v18/19): Utilização de Standalone Components, Signals para gestão de estado reativo e o novo Control Flow (@if, @for).
 
 Angular Material: Componentes de UI como tabelas, inputs, datepickers e snacks de notificação.
@@ -16,7 +16,7 @@ Ngx-mask: Máscaras dinâmicas para CPF, CNPJ e CEP.
 
 SCSS: Estilização avançada com variáveis e efeitos de Glassmorphism.
 
-Backend
+### Backend
 ASP.NET Core (.NET 8/9): Web APIs construídas sob os princípios da Clean Architecture.
 
 C#: Linguagem principal utilizando Records, DTOs e validações estritas.
@@ -25,7 +25,7 @@ SQL Server: Banco de dados relacional para armazenamento de dados mestres.
 
 Entity Framework Core: ORM para mapeamento e persistência de dados.
 
-🛠️ Detalhes da Arquitetura
+## 🛠️ Detalhes da Arquitetura
 1. Componentização Genérica
 O sistema foi projetado com componentes de alto nível para máxima reutilização:
 
@@ -38,7 +38,7 @@ UiService: Centralização do tratamento de erros do backend .NET, transformando
 2. Integração Reativa
 A comunicação entre o frontend e a API utiliza Signals, garantindo que a interface se atualize instantaneamente após operações de Delete, Create ou Update sem a necessidade de recarregar a página.
 
-🧪 Como Testar o Sistema
+## 🧪 Como Testar o Sistema
 Testes de Fluxo (UI)
 Navegação: Utilize o menu lateral (ou rotas diretas /suppliers e /companies) para alternar entre os módulos.
 
