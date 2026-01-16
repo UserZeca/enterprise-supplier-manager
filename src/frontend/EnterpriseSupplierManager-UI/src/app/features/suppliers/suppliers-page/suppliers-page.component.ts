@@ -25,9 +25,14 @@ export class SuppliersPageComponent implements OnInit {
    */
   protected readonly columns: TableColumn[] = [
     { key: 'name', label: 'Fornecedor' },
-    { key: 'document', label: 'CPF/CNPJ' },
+    { key: 'document', label: 'Documento', type: 'document' },
     { key: 'email', label: 'E-mail de Contato' },
-    { key: 'type', label: 'Tipo', type: 'badge' }
+    { 
+      key: 'type', // ID Único para evitar o erro de duplicidade
+      dataKey: 'document', // Aponta para a propriedade 'document' do objeto
+      label: 'Tipo', 
+      type: 'type' 
+  } 
   ];
 
   ngOnInit(): void {
@@ -46,8 +51,7 @@ export class SuppliersPageComponent implements OnInit {
   }
 
   onEditSupplier(supplier: Supplier): void {
-    console.log('Editando fornecedor:', supplier);
-    // Lógica para abrir o formulário de edição
+    this.router.navigate(['/suppliers/edit', supplier.id]);
   }
 
   onDeleteSupplier(supplier: Supplier): void {

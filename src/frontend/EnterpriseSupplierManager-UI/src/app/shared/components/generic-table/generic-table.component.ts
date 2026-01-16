@@ -6,13 +6,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+import { DocumentMaskPipe } from '../../pipes/document-mask.pipe';
+import { PersonTypePipe } from '../../pipes/type.pipe';
 /**
  * Interface para definir a configuração das colunas da tabela.
  */
 export interface TableColumn {
   key: string;     
   label: string;    
-  type?: 'text' | 'badge' | 'date'; 
+  type?: 'text' | 'badge' | 'date'| 'document' | 'type'; 
+  dataKey?: string;
 }
 
 @Component({
@@ -24,7 +27,9 @@ export interface TableColumn {
     MatTableModule, 
     MatButtonModule, 
     MatIconModule,
-    MatTooltipModule
+    MatTooltipModule,
+    DocumentMaskPipe,
+    PersonTypePipe
   ],
   templateUrl: './generic-table.component.html',
   styleUrl: './generic-table.component.scss'

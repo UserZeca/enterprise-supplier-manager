@@ -15,6 +15,10 @@ export class SupplierService {
   suppliers = signal<Supplier[]>([]);
   loading = signal<boolean>(false);
 
+  getById(id: string): Observable<Supplier> {
+    return this.http.get<Supplier>(`${this.apiUrl}/${id}`);
+  }
+
   // Método para buscar todos os fornecedores
   getAll(): Observable<Supplier[]> {
     this.loading.set(true);

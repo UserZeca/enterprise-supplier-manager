@@ -16,16 +16,16 @@ import { MatDatepickerModule } from '@angular/material/datepicker'; // Para o ca
 import { MatNativeDateModule } from '@angular/material/core';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 
-import { CepService } from '../../../../core/services/cepService.service';
+import { CepService } from '../../../core/services/cepService.service';
 
 // Componentes Reutilizáveis
 
-import { SupplierService } from '../../../../core/services/supplier.service';
-import { CrudGridComponent } from '../../../../shared/components/crud-grid/crud-grid-page/crud-grid-page.component';
-import { Supplier } from '../../../../core/models/supplier.model';
+import { CompanyService } from '../../../core/services/company.service';
+import { CrudGridComponent } from '../../../shared/components/crud-grid/crud-grid-page/crud-grid-page.component';
+import { Company } from '../../../core/models/company.model';
 
 @Component({
-  selector: 'app-supplier-form',
+  selector: 'app-company-form',
   standalone: true,
   imports: [
     CommonModule, 
@@ -41,34 +41,34 @@ import { Supplier } from '../../../../core/models/supplier.model';
     MatRadioModule,
     NgxMaskDirective,
   ],
-  templateUrl: './supplier-form.component.html'
+  templateUrl: './company-form.component.html'
 })
-export class SupplierFormComponent implements OnInit {
+export class CompanyFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private supplierService = inject(SupplierService);
+  private companyService = inject(CompanyService);
   private snackBar = inject(MatSnackBar);
   private cepService = inject(CepService);
 
-  supplierForm!: FormGroup;
+  companyForm!: FormGroup;
   isEditMode = false;
-  supplierId?: string;
+  companyId?: string;
 
   ngOnInit(): void {
     this.initForm();
     
     // Verifica se há um ID na rota para entrar em modo de edição
-    this.supplierId = this.route.snapshot.params['id'];
-    if (this.supplierId) {
+    this.companyId = this.route.snapshot.params['id'];
+    if (this.companyId) {
       debugger;
       this.isEditMode = true;
-      this.loadSupplier();
+      this.loadCompany();
     }
   }
 
   private initForm(): void {
-    this.supplierForm = this.fb.group({
+    this.companyForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       document: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
@@ -78,14 +78,14 @@ export class SupplierFormComponent implements OnInit {
       birthDate: [null]
     });
 
-    this.supplierForm.get('type')?.valueChanges.subscribe(type => {
+    this.companyForm.get('type')?.valueChanges.subscribe(type => {
       this.updateValidators(type);
     });
   }
 
   private updateValidators(type: 'PF' | 'PJ'): void {
-    const birthDateControl = this.supplierForm.get('birthDate');
-    const rgControl = this.supplierForm.get('rg');
+    const birthDateControl = this.companyForm.get('birthDate');
+    const rgControl = this.companyForm.get('rg');
 
     if (type === 'PF') {
       // Se for Física, os campos podem se tornar obrigatórios ou apenas visíveis
@@ -101,7 +101,7 @@ export class SupplierFormComponent implements OnInit {
   }
 
   searchCep(): void {
-    const cepValue = this.supplierForm.get('cep')?.value;
+    const cepValue = this.companyForm.get('cep')?.value;
 
     if (!cepValue || cepValue.length < 8) return;
 
@@ -112,7 +112,7 @@ export class SupplierFormComponent implements OnInit {
           return;
         }
 
-        this.supplierForm.patchValue({
+        this.companyForm.patchValue({
           street: data.logradouro,
           neighborhood: data.bairro,
           city: data.localidade,
@@ -124,64 +124,61 @@ export class SupplierFormComponent implements OnInit {
   }
 
 
-  private prepareRequestData(): Supplier {
+  private prepareRequestData(): Company {
     debugger;
-    const formValue = this.supplierForm.value;
+    const formValue = this.companyForm.value;
 
     const cleanDocument = formValue.document ? formValue.document.replace(/\D/g, '') : '';
     const cleanCep = formValue.cep ? formValue.cep.replace(/\D/g, '') : '';
 
     return {
       name: formValue.name,
-      type: formValue.type,
       document: cleanDocument, // Envia apenas números
       email: formValue.email,
       cep: cleanCep,           // Envia apenas números
-      rg: formValue.type === 'PF' ? formValue.rg : null,
-      birthDate: formValue.type === 'PF' ? formValue.birthDate : null
     };
   }
 
-  private loadSupplier(): void {
-    this.supplierService.getById(this.supplierId!).subscribe({
-      next: (supplier: any) => {
+  private loadCompany(): void {
+    this.companyService.getById(this.companyId!).subscribe({
+      next: (company: any) => {
         // 1. Identifica o tipo (prioriza o campo 'type', senão infere pelo documento)
         // Se o documento tiver mais de 11 caracteres, assume PJ, senão PF.
-        const inferredType = supplier.type || (supplier.document?.length > 11 ? 'PJ' : 'PF');
+        const inferredType = company.type || (company.document?.length > 11 ? 'PJ' : 'PF');
 
         // 2. Alimenta o formulário
-        this.supplierForm.patchValue({
-          ...supplier,
+        this.companyForm.patchValue({
+          ...company,
           type: inferredType, // Isso seleciona o Radio Button automaticamente
-          birthDate: supplier.birthDate ? new Date(supplier.birthDate) : null
+          birthDate: company.birthDate ? new Date(company.birthDate) : null
         });
 
         // 3. Executa a lógica de validadores para PF/PJ
         this.updateValidators(inferredType);
 
         // 4. Marca como "tocado" para o Angular validar o estado do botão Salvar
-        this.supplierForm.markAllAsTouched();
+        this.companyForm.markAllAsTouched();
       },
       error: () => {
-        this.snackBar.open('Erro ao carregar dados do fornecedor.', 'Fechar', { duration: 3000 });
+        this.snackBar.open('Erro ao carregar dados da Empresa.', 'Fechar', { duration: 3000 });
       }
     });
   }
 
   onSubmit(): void {
-    if (this.supplierForm.invalid) return;
+    if (this.companyForm.invalid) return;
 
     
-    const supplierData = this.prepareRequestData();
+    const companyData = this.prepareRequestData();
 
     const operation$ = this.isEditMode 
-      ? this.supplierService.update(this.supplierId!, supplierData)
-      : this.supplierService.create(supplierData);
+      ? this.companyService.update(this.companyId!, companyData)
+      : this.companyService.create(companyData);
 
     operation$.subscribe({
       next: () => {
-        this.snackBar.open('Fornecedor salvo com sucesso!', 'Fechar', { duration: 3000 });
-        this.router.navigate(['/suppliers']);
+        this.snackBar.open('Empresa salva com sucesso!', 'Fechar', { duration: 3000 });
+        this.router.navigate(['/companies']);
       },
       error: (err) => {
 
@@ -189,12 +186,12 @@ export class SupplierFormComponent implements OnInit {
           ? Object.values(err.error.errors).flat().join(' | ') 
           : 'Erro desconhecido ao salvar';
 
-        this.snackBar.open('Erro ao salvar fornecedor!\n' + errorMessage, 'Fechar', { duration: 10000 });
+        this.snackBar.open('Erro ao salvar empresa!\n' + errorMessage, 'Fechar', { duration: 10000 });
       }
     });
   }
 
   onCancel(): void {
-    this.router.navigate(['/suppliers']);
+    this.router.navigate(['/companies']);
   }
 }

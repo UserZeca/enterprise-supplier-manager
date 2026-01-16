@@ -19,6 +19,20 @@
               {{ element[column.key] | date:'dd/MM/yyyy' }}
             }
 
+            @case ('document') {
+                <span class="cell-text">
+                    {{ element[column.key] | documentMask }}
+                </span>
+            }
+ 
+            @case ('type') {
+                @let docValue = element[column.dataKey || column.key];
+
+                <span class="badge-ui" [ngClass]="docValue | type">
+                    {{ docValue | type:true }}
+                </span>
+            }
+
             @default {
               <span class="cell-text" [class.primary-info]="column.key === 'name'">
                 {{ element[column.key] }}
@@ -34,13 +48,6 @@
       <th mat-header-cell *matHeaderCellDef class="actions-header"> Ações </th>
       <td mat-cell *matCellDef="let element" class="actions-cell">
         
-        <button mat-icon-button 
-                matTooltip="Visualizar" 
-                (click)="onView(element)" 
-                class="btn-view">
-          <mat-icon>visibility</mat-icon>
-        </button>
-
         <button mat-icon-button 
                 matTooltip="Editar" 
                 (click)="onEdit(element)" 

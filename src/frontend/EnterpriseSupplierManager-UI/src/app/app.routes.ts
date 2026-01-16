@@ -18,15 +18,34 @@ export const routes: Routes = [
           import('./features/suppliers/supplier-form/supplier-form/supplier-form.component')
             .then(m => m.SupplierFormComponent)
       },
-      /*{
+      { 
         // Edição: /suppliers/edit/123
-        path: 'edit/:id',
+        // Removemos o 'suppliers/' daqui pois já estamos dentro do contexto de suppliers
+        path: 'edit/:id', 
         loadComponent: () => 
-          import('./features/suppliers/supplier-form/supplier-form.component')
+          import('./features/suppliers/supplier-form/supplier-form/supplier-form.component')
             .then(m => m.SupplierFormComponent)
-      }*/
+      }
     ]
   },
+  {
+    path: 'companies',
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./features/companies/company-page/company-page.component').then(m => m.CompanyPageComponent)
+      },
+      {
+        path: 'new',
+        loadComponent: () => import('./features/companies/company-form/company-form.component').then(m => m.CompanyFormComponent)
+      },
+      {
+        path: 'edit/:id',
+        loadComponent: () => import('./features/companies/company-form/company-form.component').then(m => m.CompanyFormComponent)
+      }
+    ]
+  },
+
   {
     path: '',
     redirectTo: 'suppliers',
