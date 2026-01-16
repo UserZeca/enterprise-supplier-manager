@@ -23,18 +23,24 @@ SQL Server: Banco de dados relacional para armazenamento de dados mestres.
 
 Entity Framework Core: ORM para mapeamento e persistência de dados.
 
-## 🛠️ Detalhes da Arquitetura
-1. Componentização Genérica
-O sistema foi projetado com componentes de alto nível para máxima reutilização:
+## 🏗️ Arquitetura e Padrões
+### Backend (Clean Architecture)
+A solução backend é dividida em camadas lógicas para garantir o desacoplamento e a testabilidade:
 
-GenericTable<T>: Tabela abstrata que renderiza dados dinamicamente com base em configurações de colunas.
+Domain: Contém as entidades de negócio, interfaces e exceções de domínio. É o núcleo do sistema, independente de frameworks externos.
 
-PageLayout: Estrutura de cabeçalho e container de vidro padronizada para todas as páginas de CRUD.
+Application: Implementa a lógica de negócio, DTOs (Data Transfer Objects) para contratos de entrada/saída e mapeamentos de dados.
 
-UiService: Centralização do tratamento de erros do backend .NET, transformando objetos de validação em notificações amigáveis.
+Infrastructure: Responsável pela persistência (DbContext, Repositórios) e integrações externas (como a consulta ao ViaCEP).
 
-2. Integração Reativa
-A comunicação entre o frontend e a API utiliza Signals, garantindo que a interface se atualize instantaneamente após operações de Delete, Create ou Update sem a necessidade de recarregar a página.
+WebAPI: Camada de entrada que gerencia os Controllers, injeção de dependência e Middlewares para tratamento global de exceções.
+
+### Frontend (Reactive Architecture)
+Generic Components: Implementação do GenericTable<T>, um componente agnóstico ao tipo de dado que renderiza colunas dinamicamente através de uma interface de configuração de colunas.
+
+Signals State Management: O estado da aplicação (como listas de fornecedores e empresas) é gerenciado via Signals, permitindo atualizações granulares da UI sem a necessidade de ciclos de detecção de mudança pesados.
+
+Unified Error Handling: O UiService centraliza o tratamento de erros da API, realizando o parsing de objetos de validação complexos vindos do ASP.NET e apresentando-os via MatSnackBar.
 
 ## 🧪 Como Testar o Sistema
 ### Testes de Fluxo (UI)
