@@ -82,6 +82,14 @@ public class SupplierService : ISupplierService
         return supplier?.Adapt<SupplierResponseDTO>();
     }
 
+    public async Task<IEnumerable<SupplierResponseDTO>> GetAllAsync()
+    {
+        var suppliers = await _supplierRepository.GetAllAsync();
+
+        // Converte a lista de entidades para DTOs de resposta
+        return suppliers.Adapt<IEnumerable<SupplierResponseDTO>>();
+    }
+
     public async Task<IEnumerable<SupplierResponseDTO>> GetAllByCompanyIdAsync(Guid companyId)
     {
         var suppliers = await _supplierRepository.GetByCompanyIdAsync(companyId);

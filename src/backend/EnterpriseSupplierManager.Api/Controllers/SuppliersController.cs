@@ -49,6 +49,13 @@ public class SuppliersController : ControllerBase
         return Ok(supplier);
     }
 
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<SupplierResponseDTO>>> GetAll()
+    {
+        var result = await _supplierService.GetAllAsync();
+        return Ok(result);
+    }
+
     [HttpPost("{supplierId:guid}/associate/{companyId:guid}")]
     public async Task<IActionResult> Associate(Guid supplierId, Guid companyId)
     {

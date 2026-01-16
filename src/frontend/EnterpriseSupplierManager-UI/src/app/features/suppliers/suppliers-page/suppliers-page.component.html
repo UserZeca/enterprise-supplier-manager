@@ -1,0 +1,16 @@
+<app-crud-grid 
+  title="Gestão de Fornecedores"
+  subtitle="Consulte e administre o cadastro centralizado de fornecedores da organização."
+  btnLabel="Novo Fornecedor"
+  btnIcon="add"
+  (btnClick)="onAddSupplier()">
+
+  <app-generic-table 
+    [data]="supplierService.suppliers()" 
+    [columns]="columns"
+    (edit)="onEditSupplier($event)"
+    (delete)="onDeleteSupplier($event)"
+    (view)="onViewSupplier($event)">
+  </app-generic-table>
+
+</app-crud-grid>

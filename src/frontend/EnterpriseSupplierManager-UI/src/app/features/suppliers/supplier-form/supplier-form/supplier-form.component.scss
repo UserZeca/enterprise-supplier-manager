@@ -1,0 +1,42 @@
+.glass-form {
+  padding: 1rem 0;
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); // Duas colunas em desktop
+    gap: 1.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr; // Uma coluna em mobile
+    }
+  }
+
+  .form-actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding-top: 1.5rem;
+  }
+}
+
+// Estilização customizada para os campos Material no vidro
+::ng-deep .mat-mdc-text-field-wrapper {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.type-selection {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+
+  mat-label {
+    font-weight: 500;
+    color: #1a237e;
+  }
+}

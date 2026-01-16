@@ -9,5 +9,6 @@ public interface ISupplierService
     Task UpdateAsync(Guid id, SupplierRequestDTO request);
     Task DeleteAsync(Guid id);
     Task<SupplierResponseDTO?> GetByIdAsync(Guid id);
+    Task<IEnumerable<SupplierResponseDTO>> GetAllAsync();
     Task AssociateToCompanyAsync(Guid supplierId, Guid companyId);
 }

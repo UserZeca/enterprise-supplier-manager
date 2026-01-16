@@ -1,0 +1,25 @@
+.table-container {
+  width: 100%;
+  overflow-x: auto; // Habilita o scroll lateral se a tabela for maior que a tela
+  -webkit-overflow-scrolling: touch; // Melhora o scroll no iOS
+
+  .custom-table {
+    width: 100%;
+    min-width: 700px; // Garante que a tabela não "esprema" as colunas em mobile
+    background: transparent;
+
+    th.mat-header-cell, td.mat-cell {
+      padding: 12px 16px;
+      white-space: nowrap; // Impede que o texto quebre linha e desalinhe a tabela
+    }
+
+    // Estilização da barra de scroll para manter o padrão Liquid Glass
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+  }
+}

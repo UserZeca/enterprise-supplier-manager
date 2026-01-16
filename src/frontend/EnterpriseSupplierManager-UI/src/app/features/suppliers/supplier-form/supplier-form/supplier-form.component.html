@@ -1,0 +1,55 @@
+<app-crud-grid title="Cadastro de Fornecedor">
+  <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" class="glass-form">
+    
+    <div class="type-selection">
+      <mat-label>Tipo de Fornecedor:</mat-label>
+      <mat-radio-group formControlName="type" color="primary">
+        <mat-radio-button value="PJ">Pessoa Jurídica (CNPJ)</mat-radio-button>
+        <mat-radio-button value="PF">Pessoa Física (CPF)</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Nome / Razão Social</mat-label>
+        <input matInput formControlName="name">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ supplierForm.get('type')?.value === 'PF' ? 'CPF' : 'CNPJ' }}</mat-label>
+        <input matInput formControlName="document">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>E-mail</mat-label>
+        <input matInput formControlName="email">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>CEP</mat-label>
+        <input matInput formControlName="cep">
+      </mat-form-field>
+
+      @if (supplierForm.get('type')?.value === 'PF') {
+        <mat-form-field appearance="outline">
+          <mat-label>RG</mat-label>
+          <input matInput formControlName="rg">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Data de Nascimento</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="birthDate">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      }
+    </div>
+
+    <div class="form-actions">
+      <button mat-button type="button" (click)="onCancel()">Cancelar</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="supplierForm.invalid">
+        Salvar Fornecedor
+      </button>
+    </div>
+  </form>
+</app-crud-grid>
