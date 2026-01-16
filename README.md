@@ -1,17 +1,95 @@
 # 🏢 Enterprise Supplier Manager
 
-Solução desenvolvida para o **gerenciamento de relações entre Empresas e Fornecedores**, com foco em **integridade fiscal, organização de dados mestres (MDM)** e **arquitetura escalável**.
+Plataforma **full-stack** para **gestão centralizada de Empresas e Fornecedores (MDM)**, desenvolvida com foco em **consistência de dados**, **integridade fiscal**, **testabilidade** e **arquitetura escalável**.
+
+O projeto simula um cenário corporativo real, aplicando **Clean Architecture**, **validações robustas**, **testes automatizados** e **boas práticas modernas** tanto no backend quanto no frontend.
 
 ---
 
 ## 📌 Visão Geral
 
-O **Enterprise Supplier Manager** é uma plataforma de **gestão centralizada de dados mestres (MDM)**, projetada para otimizar o controle de:
+O **Enterprise Supplier Manager** resolve o problema de **cadastro, manutenção e governança de dados mestres** de fornecedores e empresas, oferecendo:
 
-- Fornecedores  
-- Unidades de negócio (Empresas)
+- Modelo de dados consistente e validado
+- Separação clara de responsabilidades
+- Preparação para crescimento, auditoria e integração com outros sistemas
 
-A solução combina uma **interface objetiva e funcional** com uma **arquitetura backend robusta**, garantindo confiabilidade, consistência de dados e conformidade fiscal/tributária.
+A solução foi pensada desde o início para **ambientes corporativos**, onde confiabilidade e evolução contínua são essenciais.
+
+---
+
+## 📦 Instalação e Configuração
+
+Esta seção descreve os passos necessários para configurar o ambiente de desenvolvimento e executar a solução completa localmente.
+
+---
+
+### 1️⃣ Pré-requisitos
+
+Certifique-se de ter as seguintes ferramentas instaladas em sua estação de trabalho:
+
+- Docker e Docker Compose
+- Node.js (v18+) e Angular CLI
+- .NET SDK (v8.0 ou v9.0)
+- Entity Framework Core Tools
+
+Instalação do EF Core Tools (caso necessário):
+
+```bash
+dotnet tool install --global dotnet-ef
+```
+
+### 2️⃣ Configuração do Banco de Dados e API (Docker)
+
+A solução utiliza Docker Compose para orquestrar o banco de dados SQL Server 2022 e o serviço de API.
+
+Na raiz do projeto, execute o comando abaixo para subir os containers:
+
+```
+  docker-compose up -d
+```
+### 🔐 Nota de Segurança
+
+- Usuário do SQL Server: sa
+- Senha do SQL Server:
+- Os dados do banco de dados são persistidos no volume Docker:
+
+## ✨ Principais Funcionalidades
+
+### 📦 Gestão de Fornecedores (Supplier MDM)
+- Cadastro e manutenção de fornecedores
+- Suporte a **Pessoa Física** e **Pessoa Jurídica**
+- Validação rigorosa de documentos (CPF / CNPJ)
+- **Soft Delete** para preservação histórica dos dados
+
+### 🏢 Gestão de Empresas
+- Cadastro de empresas (unidades de negócio)
+- Relacionamento **N:N (Many-to-Many)** entre Empresas e Fornecedores
+- Estrutura preparada para expansão organizacional
+
+### 📍 Integração de Endereços
+- Consulta automática de endereço via **API ViaCEP**
+- Infraestrutura desacoplada para serviços externos
+
+### 🛡️ Validações e Confiabilidade
+- **FluentValidation** aplicado na camada de Application
+- Regras de integridade de domínio bem definidas
+- Padronização de erros para consumo pelo frontend
+
+### ⚠️ Tratamento Global de Erros
+- Middleware de **Global Exception Handling**
+- Contratos de erro consistentes entre API e UI
+- Melhor experiência para o usuário final
+
+---
+
+## 🧪 Qualidade e Testes
+
+- **Testes unitários abrangentes** nas camadas:
+  - Domain
+  - Application
+- Garantia de regras de negócio isoladas de infraestrutura
+- Projeto orientado à **alta testabilidade**
 
 ---
 
@@ -21,12 +99,12 @@ A solução combina uma **interface objetiva e funcional** com uma **arquitetura
 
 - **Angular (v18/19)**
   - Standalone Components
-  - Signals para gerenciamento de estado reativo
+  - Signals para estado reativo
   - Novo Control Flow (`@if`, `@for`)
 - **Angular Material**
-  - Tabelas, inputs, datepickers e snackbars
+  - Tabelas, formulários, datepickers e snackbars
 - **Bootstrap 5**
-  - Grid system e utilitários para responsividade
+  - Grid system e responsividade
 - **Ngx-mask**
   - Máscaras dinâmicas para CPF, CNPJ e CEP
 
@@ -35,101 +113,100 @@ A solução combina uma **interface objetiva e funcional** com uma **arquitetura
 ### ⚙️ Backend
 
 - **ASP.NET Core (.NET 8/9)**
-  - Web APIs baseadas em Clean Architecture
+  - APIs seguindo Clean Architecture
 - **C#**
-  - Uso de Records, DTOs e validações estritas
-- **SQL Server**
-  - Banco de dados relacional para dados mestres
+  - Records, DTOs e tipagem forte
 - **Entity Framework Core**
-  - ORM para mapeamento e persistência de dados
+  - ORM e migrations
+- **SQL Server**
+  - Persistência de dados mestres
+- **FluentValidation**
+  - Validações declarativas e reutilizáveis
 
 ---
 
-## 🏗️ Arquitetura e Padrões
+## 🏗️ Arquitetura
 
-### 🧱 Backend — Clean Architecture
+### Backend — Clean Architecture
 
-A solução backend é estruturada em camadas bem definidas, garantindo **desacoplamento**, **manutenibilidade** e **testabilidade**:
+Estrutura dividida para máximo desacoplamento:
 
 - **Domain**
-  - Entidades de negócio
-  - Interfaces
-  - Exceções de domínio  
-  - Camada central, independente de frameworks
+  - Entidades (`Company`, `Supplier`)
+  - Regras de negócio
+  - Contratos e exceções
 
 - **Application**
-  - Lógica de negócio
-  - DTOs (Data Transfer Objects)
-  - Mapeamentos e validações
+  - Casos de uso
+  - DTOs e validações
+  - Orquestração da lógica de negócio
 
 - **Infrastructure**
-  - Persistência de dados (`DbContext`, Repositórios)
-  - Integrações externas (ex: API ViaCEP)
+  - EF Core
+  - Repositórios
+  - Integração ViaCEP
+  - Configuração de Soft Delete
 
 - **WebAPI**
   - Controllers
-  - Injeção de dependência
-  - Middlewares (tratamento global de exceções)
+  - Dependency Injection
+  - Middlewares (Exception Handling)
 
 ---
 
-### ⚡ Frontend — Reactive Architecture
+### Frontend — Arquitetura Reativa
 
-- **Generic Components**
-  - Implementação do `GenericTable<T>`
-  - Componente agnóstico ao tipo de dado
-  - Renderização dinâmica via interface de configuração de colunas
+- **GenericTable<T>**
+  - Componente genérico reutilizável
+  - Renderização dinâmica via configuração de colunas
 
-- **Signals State Management**
-  - Gerenciamento de estado com Signals
-  - Atualizações granulares da UI
-  - Eliminação de ciclos pesados de change detection
+- **State Management com Signals**
+  - Atualizações granulares
+  - Menor acoplamento e melhor performance
 
-- **Unified Error Handling**
-  - `UiService` centraliza o tratamento de erros da API
-  - Parsing de validações complexas do ASP.NET
-  - Exibição de erros via `MatSnackBar`
+- **Tratamento Unificado de Erros**
+  - Parsing de erros vindos do ASP.NET
+  - Exibição padronizada via `MatSnackBar`
 
 ---
 
-## 🧪 Como Testar o Sistema
+## 🐳 Infraestrutura
 
-### 🖥️ Testes de Fluxo (UI)
-
-- **Navegação**
-  - Utilize o menu lateral ou as rotas diretas:
-    - `/suppliers`
-    - `/companies`
-
-#### Cadastro de Fornecedor
-
-- **Pessoa Física**
-  - Exibe campos de **RG** e **Data de Nascimento**
-- **Pessoa Jurídica**
-  - Oculta campos pessoais
-- **Consulta de CEP**
-  - Informe um CEP válido
-  - Ao sair do campo (blur), a integração com a API ViaCEP é acionada
-- **Máscaras**
-  - CPF: 11 dígitos
-  - CNPJ: 14 dígitos
+- **Docker**
+  - Ambiente isolado para backend e banco de dados
+- **Migrations automatizadas**
+  - Inicialização rápida do ambiente
 
 ---
 
-### 🔌 Testes de API (Backend)
+## 🧪 Como Testar
 
-- **Swagger**
-  - Acesse:
-    ```
-    https://localhost:PORTA/swagger
-    ```
+### UI
+- Rotas:
+  - `/suppliers`
+  - `/companies`
+- Testar:
+  - Alternância entre PF / PJ
+  - Consulta de CEP
+  - Máscaras e validações
 
-- **Validações**
-  - Envie um `SupplierRequestDTO` sem o campo `Document`
-  - Verifique se o erro retornado pelo .NET é exibido corretamente no `SnackBar` do Angular
+### API
+- Swagger disponível em:
+- Testar envio de requests inválidos para validar o tratamento de erros
+
+---
+
+## 🎯 Objetivo do Projeto
+
+Este projeto foi desenvolvido com foco em:
+
+- Simular **cenários reais de software corporativo**
+- Demonstrar domínio de **Clean Architecture**
+- Aplicar **boas práticas modernas** de frontend e backend
+- Servir como **base escalável** para sistemas MDM
 
 ---
 
 ## 📄 Licença
 
-Projeto desenvolvido para fins educacionais e corporativos internos.
+Projeto de uso educacional e demonstrativo.
