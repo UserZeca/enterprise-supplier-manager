@@ -54,6 +54,49 @@ Na raiz do projeto, execute o comando abaixo para subir os containers:
 - Senha do SQL Server:
 - Os dados do banco de dados são persistidos no volume Docker:
 
+```sql_data```
+
+### 3️⃣ Migrations e Base de Dados
+```
+dotnet ef database update --project src/backend/EnterpriseSupplierManager.Infrastructure
+```
+Com o container do banco de dados ativo, aplique as Migrations do Entity Framework Core para criar o schema do banco de dados DbEnterpriseSupplier.
+
+### 4️⃣ Execução do Frontend (Angular)
+
+O frontend deve ser executado localmente para facilitar o ciclo de desenvolvimento e depuração.
+
+```bash
+# Navegue até a pasta do frontend
+cd src/frontend/EnterpriseSupplierManager-UI
+
+# Instale as dependências
+npm install
+
+# Inicie o servidor de desenvolvimento
+ng serve
+````
+
+Acesse a aplicação em:
+http://localhost:4200
+
+## 🛠️ Detalhes de Conectividade
+
+A tabela abaixo resume os serviços expostos pela solução, suas portas padrão e finalidades durante o desenvolvimento local.
+
+| Serviço               | Porta | Descrição |
+|-----------------------|-------|-----------|
+| SQL Server            | 1433  | Banco de dados relacional (Instância: `sql-server-dev-bh`) |
+| Web API (HTTP)        | 8080  | Endpoint principal para consumo do frontend |
+| Web API (HTTPS)       | 8081  | Endpoint seguro para desenvolvimento |
+| Swagger UI            | `/swagger` | Documentação interativa dos contratos de Empresas e Fornecedores |
+
+### Observações
+
+- O acesso ao **Swagger UI** é feito através da URL base da API, por exemplo:
+- As portas podem ser ajustadas no arquivo `docker-compose.yml`, caso necessário.
+- O frontend Angular consome a API via HTTP/HTTPS conforme configuração do ambiente.
+
 ## ✨ Principais Funcionalidades
 
 ### 📦 Gestão de Fornecedores (Supplier MDM)
