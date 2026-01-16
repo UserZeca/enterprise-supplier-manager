@@ -1,62 +1,135 @@
-# enterprise-supplier-manager
-Solução desenvolvida para o gerenciamento de relações entre Empresas e Fornecedores.
+# 🏢 Enterprise Supplier Manager
 
-## Enterprise Supplier Manager
-O Enterprise Supplier Manager é uma plataforma de gestão centralizada de dados mestres (MDM) desenvolvida para otimizar o controle de fornecedores e unidades de negócio (empresas). O sistema utiliza uma estética direta integrada a uma arquitetura robusta no backend para garantir integridade fiscal e tributária.
+Solução desenvolvida para o **gerenciamento de relações entre Empresas e Fornecedores**, com foco em **integridade fiscal, organização de dados mestres (MDM)** e **arquitetura escalável**.
+
+---
+
+## 📌 Visão Geral
+
+O **Enterprise Supplier Manager** é uma plataforma de **gestão centralizada de dados mestres (MDM)**, projetada para otimizar o controle de:
+
+- Fornecedores  
+- Unidades de negócio (Empresas)
+
+A solução combina uma **interface objetiva e funcional** com uma **arquitetura backend robusta**, garantindo confiabilidade, consistência de dados e conformidade fiscal/tributária.
+
+---
 
 ## 🚀 Tecnologias Utilizadas
-### Frontend
-Angular (v18/19): Utilização de Standalone Components, Signals para gestão de estado reativo e o novo Control Flow (@if, @for).
 
-Angular Material: Componentes de UI como tabelas, inputs, datepickers e snacks de notificação.
+### 🎨 Frontend
 
-Bootstrap 5: Sistema de Grid e utilitários para responsividade acelerada.
+- **Angular (v18/19)**
+  - Standalone Components
+  - Signals para gerenciamento de estado reativo
+  - Novo Control Flow (`@if`, `@for`)
+- **Angular Material**
+  - Tabelas, inputs, datepickers e snackbars
+- **Bootstrap 5**
+  - Grid system e utilitários para responsividade
+- **Ngx-mask**
+  - Máscaras dinâmicas para CPF, CNPJ e CEP
 
-Ngx-mask: Máscaras dinâmicas para CPF, CNPJ e CEP.
+---
 
-### Backend
-ASP.NET Core (.NET 8/9): Web APIs construídas sob os princípios da Clean Architecture.
+### ⚙️ Backend
 
-C#: Linguagem principal utilizando Records, DTOs e validações estritas.
+- **ASP.NET Core (.NET 8/9)**
+  - Web APIs baseadas em Clean Architecture
+- **C#**
+  - Uso de Records, DTOs e validações estritas
+- **SQL Server**
+  - Banco de dados relacional para dados mestres
+- **Entity Framework Core**
+  - ORM para mapeamento e persistência de dados
 
-SQL Server: Banco de dados relacional para armazenamento de dados mestres.
-
-Entity Framework Core: ORM para mapeamento e persistência de dados.
+---
 
 ## 🏗️ Arquitetura e Padrões
-### Backend (Clean Architecture)
-A solução backend é dividida em camadas lógicas para garantir o desacoplamento e a testabilidade:
 
-Domain: Contém as entidades de negócio, interfaces e exceções de domínio. É o núcleo do sistema, independente de frameworks externos.
+### 🧱 Backend — Clean Architecture
 
-Application: Implementa a lógica de negócio, DTOs (Data Transfer Objects) para contratos de entrada/saída e mapeamentos de dados.
+A solução backend é estruturada em camadas bem definidas, garantindo **desacoplamento**, **manutenibilidade** e **testabilidade**:
 
-Infrastructure: Responsável pela persistência (DbContext, Repositórios) e integrações externas (como a consulta ao ViaCEP).
+- **Domain**
+  - Entidades de negócio
+  - Interfaces
+  - Exceções de domínio  
+  - Camada central, independente de frameworks
 
-WebAPI: Camada de entrada que gerencia os Controllers, injeção de dependência e Middlewares para tratamento global de exceções.
+- **Application**
+  - Lógica de negócio
+  - DTOs (Data Transfer Objects)
+  - Mapeamentos e validações
 
-### Frontend (Reactive Architecture)
-Generic Components: Implementação do GenericTable<T>, um componente agnóstico ao tipo de dado que renderiza colunas dinamicamente através de uma interface de configuração de colunas.
+- **Infrastructure**
+  - Persistência de dados (`DbContext`, Repositórios)
+  - Integrações externas (ex: API ViaCEP)
 
-Signals State Management: O estado da aplicação (como listas de fornecedores e empresas) é gerenciado via Signals, permitindo atualizações granulares da UI sem a necessidade de ciclos de detecção de mudança pesados.
+- **WebAPI**
+  - Controllers
+  - Injeção de dependência
+  - Middlewares (tratamento global de exceções)
 
-Unified Error Handling: O UiService centraliza o tratamento de erros da API, realizando o parsing de objetos de validação complexos vindos do ASP.NET e apresentando-os via MatSnackBar.
+---
+
+### ⚡ Frontend — Reactive Architecture
+
+- **Generic Components**
+  - Implementação do `GenericTable<T>`
+  - Componente agnóstico ao tipo de dado
+  - Renderização dinâmica via interface de configuração de colunas
+
+- **Signals State Management**
+  - Gerenciamento de estado com Signals
+  - Atualizações granulares da UI
+  - Eliminação de ciclos pesados de change detection
+
+- **Unified Error Handling**
+  - `UiService` centraliza o tratamento de erros da API
+  - Parsing de validações complexas do ASP.NET
+  - Exibição de erros via `MatSnackBar`
+
+---
 
 ## 🧪 Como Testar o Sistema
-### Testes de Fluxo (UI)
-Navegação: Utilize o menu lateral (ou rotas diretas /suppliers e /companies) para alternar entre os módulos.
 
-Cadastro de Fornecedor:
+### 🖥️ Testes de Fluxo (UI)
 
-  Selecione Pessoa Física: O formulário deve exibir campos de RG e Data de Nascimento.
-  
-  Selecione Pessoa Jurídica: O formulário deve ocultar campos pessoais.
-  
-  Consulta de CEP: Digite um CEP válido e saia do campo (blur) para verificar a integração com a API ViaCEP.
-  
-  Máscaras: Insira documentos para validar a formatação automática de CPF (11 dígitos) e CNPJ (14 dígitos).
+- **Navegação**
+  - Utilize o menu lateral ou as rotas diretas:
+    - `/suppliers`
+    - `/companies`
 
-### Testes de API (Backend)
-Swagger: Acesse https://localhost:PORTA/swagger para visualizar todos os endpoints.
+#### Cadastro de Fornecedor
 
-Validações: Tente enviar um SupplierRequestDTO sem o campo Document e verifique se o SnackBar do Angular exibe o erro retornado pelo .NET.
+- **Pessoa Física**
+  - Exibe campos de **RG** e **Data de Nascimento**
+- **Pessoa Jurídica**
+  - Oculta campos pessoais
+- **Consulta de CEP**
+  - Informe um CEP válido
+  - Ao sair do campo (blur), a integração com a API ViaCEP é acionada
+- **Máscaras**
+  - CPF: 11 dígitos
+  - CNPJ: 14 dígitos
+
+---
+
+### 🔌 Testes de API (Backend)
+
+- **Swagger**
+  - Acesse:
+    ```
+    https://localhost:PORTA/swagger
+    ```
+
+- **Validações**
+  - Envie um `SupplierRequestDTO` sem o campo `Document`
+  - Verifique se o erro retornado pelo .NET é exibido corretamente no `SnackBar` do Angular
+
+---
+
+## 📄 Licença
+
+Projeto desenvolvido para fins educacionais e corporativos internos.
