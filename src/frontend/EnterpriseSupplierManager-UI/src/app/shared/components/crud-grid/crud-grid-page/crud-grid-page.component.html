@@ -1,0 +1,24 @@
+<div class="page-layout">
+  <header class="page-header">
+    <div class="header-content">
+      <h1>{{ title }}</h1>
+      @if (subtitle) {
+        <p class="subtitle">{{ subtitle }}</p>
+      }
+    </div>
+
+    @if (btnLabel) {
+      <button mat-flat-button 
+              color="primary" 
+              class="add-button" 
+              (click)="btnClick.emit()">
+        <mat-icon>{{ btnIcon }}</mat-icon>
+        {{ btnLabel }}
+      </button>
+    }
+  </header>
+
+  <app-glass-card>
+    <ng-content></ng-content>
+  </app-glass-card>
+</div>

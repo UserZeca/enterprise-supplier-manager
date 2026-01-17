@@ -1,0 +1,31 @@
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql-server-dev-bh
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=admindev#2026
+      - MSSQL_PID=Developer
+    volumes:
+      - sql_data:/var/opt/mssql
+
+  api:
+    image: enterprise-supplier-api
+    build:
+      context: .
+      dockerfile: src/backend/EnterpriseSupplierManager.Api/Dockerfile
+    container_name: enterprise-api-service
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=db,1433;Database=DbEnterpriseSupplier;User Id=sa;Password=AsiJ)|PpmfQ1q>Wd;Encrypt=False;TrustServerCertificate=True;Connect Timeout=60
+    depends_on:
+      - db
+
+volumes:
+  sql_data:
